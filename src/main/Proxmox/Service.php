@@ -8,181 +8,66 @@
  */
 namespace Proxmox;
 
-use Guzzle\Http\Client;
-use Guzzle\Http\Message\EntityEnclosingRequest;
-use Guzzle\Http\Message\Response;
-use Guzzle\Plugin\Cookie\Cookie;
-use Guzzle\Plugin\Cookie\CookiePlugin;
-use Guzzle\Plugin\Cookie\CookieJar\ArrayCookieJar;
+use Proxmox\Iface\PVEInterface;
 /**
  * Provides a wrapper service for managing the main calls to and from the api.
+ * It makes use of the CallManager to make the actual calls, handle initial
+ * authentication and provide authentication information back to the server
+ * when needed. As a result the Service tries to provide just a wrapper
+ * around the calls themselves to all convenient access through a PHP/OOP API
+ *
  * Class Service
  * @package Proxmox
  */
-class Service {
+class Service implements PVEInterface {
 
-    private $host;
-    private $user;
-    private $pass;
-    private $realm;
-    private $domain;
-    private $base = "/api2/json";
-    private $authData;
-
-    private $authCookieName = "PVEAuthCookie";
-
-    private $client;
-    private $cookieJar;
-    private $cookies;
-
-    function __construct() {
-        $this->cookieJar = new ArrayCookieJar();
-        $this->cookies = new CookiePlugin($this->cookieJar);
-        $this->authData = array();
-    }
-
-    function connect() {
-        $this->client = new Client($this->host);
-        $this->client->addSubscriber($this->cookies);
-        /** @var EntityEnclosingRequest $response */
-        $request = $this->client->post($this->base."/access/ticket",null,array(
-            "username"=>$this->user,
-            "realm"=>$this->realm,
-            "password"=>$this->pass
-        ));
-
-        $request->getCurlOptions()->set(CURLOPT_SSL_VERIFYHOST, false);
-        $request->getCurlOptions()->set(CURLOPT_SSL_VERIFYPEER, false);
-
-        $response = $request->send();
-        $result = $response->json();
-        $this->authData = $result['data'];
-        $cookie = new Cookie();
-        $cookie->setDomain($this->domain);
-        $cookie->setName($this->authCookieName);
-        $cookie->setValue($this->authData['ticket']);
-        $this->cookieJar->add($cookie);
-    }
-
-    function getAuth() {
-            return $this->authData;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getDomain()
+    function getNodes()
     {
-        return $this->domain;
+        // TODO: Implement getNodes() method.
     }
 
-    /**
-     * @param mixed $domain
-     */
-    public function setDomain($domain)
+    function getNode($node)
     {
-        $this->domain = $domain;
+        // TODO: Implement getNode() method.
     }
 
-    /**
-     * @return mixed
-     */
-    public function getRealm()
+    function getPools()
     {
-        return $this->realm;
+        // TODO: Implement getPools() method.
     }
 
-    /**
-     * @param mixed $realm
-     */
-    public function setRealm($realm)
+    function getStorage($node)
     {
-        $this->realm = $realm;
+        // TODO: Implement getStorage() method.
     }
 
-    private function _request($url,$data) {
-
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getHost()
+    function getTemplates($node, $storage)
     {
-        return $this->host;
+        // TODO: Implement getTemplates() method.
     }
 
-    /**
-     * @param mixed $host
-     */
-    public function setHost($host)
+    function createInstance()
     {
-        $this->host = $host;
+        // TODO: Implement createInstance() method.
     }
 
-    /**
-     * @return mixed
-     */
-    public function getUser()
+    function getInstance()
     {
-        return $this->user;
+        // TODO: Implement getInstance() method.
     }
 
-    /**
-     * @param mixed $user
-     */
-    public function setUser($user)
+    function deleteInstance()
     {
-        $this->user = $user;
+        // TODO: Implement deleteInstance() method.
     }
 
-    /**
-     * @return mixed
-     */
-    public function getPass()
+    function backupInstance()
     {
-        return $this->pass;
+        // TODO: Implement backupInstance() method.
     }
 
-    /**
-     * @param mixed $pass
-     */
-    public function setPass($pass)
+    function setInstanceConfig($instanceId, $configUpdates)
     {
-        $this->pass = $pass;
+        // TODO: Implement setInstanceConfig() method.
     }
-
-    /**
-     * @return string
-     */
-    public function getBase()
-    {
-        return $this->base;
-    }
-
-    /**
-     * @param string $base
-     */
-    public function setBase($base)
-    {
-        $this->base = $base;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getAuthData()
-    {
-        return $this->authData;
-    }
-
-    /**
-     * @param mixed $authData
-     */
-    public function setAuthData($authData)
-    {
-        $this->authData = $authData;
-    }
-
-
-} 
+}
