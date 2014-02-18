@@ -17,4 +17,13 @@ use Proxmox\Iface\Instance;
  */
 class Container implements Instance {
 
-} 
+    function getNode()
+    {
+        // TODO: Implement getNode() method.
+    }
+
+    function setNode()
+    {
+        // TODO: Implement setNode() method.
+    }
+}

@@ -18,4 +18,12 @@ interface Instance {
     function getNode();
     function setNode();
 
+    function getStatus();
+
+    function start();
+    function stop();
+    function restart();
+
+    function backup();
+
 }
