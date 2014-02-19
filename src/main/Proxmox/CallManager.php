@@ -24,11 +24,12 @@ use Guzzle\Plugin\Cookie\CookieJar\FileCookieJar;
  */
 class CallManager {
 
+    private $protocol = "https";
     private $host;
-    private $user;
+    private $user = "root";
     private $pass;
     private $realm;
-    private $domain;
+    private $port = 8006;
     private $base = "/api2/json";
     private $authData;
 
@@ -39,14 +40,18 @@ class CallManager {
     private $cookieJar;
     private $cookies;
 
-    function __construct() {
+    function __construct($host, $port = 8006, $user, $pass) {
+        $this->host = $host;
+        $this->port = $port;
+        $this->user = $user;
+        $this->pass = $pass;
         $this->cookieJar = new ArrayCookieJar();
         $this->cookies = new CookiePlugin($this->cookieJar);
         $this->authData = array();
     }
 
     function connect() {
-        $this->client = new Client($this->host.$this->base);
+        $this->client = new Client($this->protocol."://".$this->host.":".$this->port."/".$this->base);
         $this->client->addSubscriber($this->cookies);
         /** @var EntityEnclosingRequest $response */
         $request = $this->client->post($this->base."/access/ticket",null,array(
@@ -62,11 +67,11 @@ class CallManager {
         $result = $response->json();
         $this->authData = $result['data'];
         $cookie = new Cookie();
-        $cookie->setDomain($this->domain);
+        $cookie->setDomain($this->host);
         $cookie->setName($this->authCookieName);
         $cookie->setValue($this->authData['ticket']);
         $this->cookies->getCookieJar()->add($cookie);
-        $cookie->setPorts(array(8006));
+        $cookie->setPorts(array($this->port));
 //        $this->cookieJar->add($cookie);
 //        echo print_r($cookie,true);
     }
@@ -100,22 +105,6 @@ class CallManager {
     /**
      * @return mixed
      */
-    public function getDomain()
-    {
-        return $this->domain;
-    }
-
-    /**
-     * @param mixed $domain
-     */
-    public function setDomain($domain)
-    {
-        $this->domain = $domain;
-    }
-
-    /**
-     * @return mixed
-     */
     public function getRealm()
     {
         return $this->realm;
@@ -127,6 +116,38 @@ class CallManager {
     public function setRealm($realm)
     {
         $this->realm = $realm;
+    }
+
+    /**
+     * @return string
+     */
+    public function getProtocol()
+    {
+        return $this->protocol;
+    }
+
+    /**
+     * @param string $protocol
+     */
+    public function setProtocol($protocol)
+    {
+        $this->protocol = $protocol;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPort()
+    {
+        return $this->port;
+    }
+
+    /**
+     * @param int $port
+     */
+    public function setPort($port)
+    {
+        $this->port = $port;
     }
 
     private function _request($url,$data) {

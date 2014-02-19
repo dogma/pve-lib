@@ -14,10 +14,11 @@ class CallManagerTest extends PHPUnit_Framework_TestCase {
     //These values need to be provided before tests can run
     //successfully.
     private $host = "";
-    private $domain = "";
     private $user = "";
     private $pass = "";
     private $realm = "";
+    private $port = 8006;
+    private $protocol = "https";
     private $userCodeCheck = "";
     private $testNode = "";
     private $testPool = "test";
@@ -28,12 +29,9 @@ class CallManagerTest extends PHPUnit_Framework_TestCase {
     }
 
     function setUp() {
-        $this->service = new CallManager();
-        $this->service->setHost($this->host);
-        $this->service->setUser($this->user);
+        $this->service = new CallManager($this->host, $this->port, $this->user, $this->pass);
+        $this->service->setProtocol($this->protocol);
         $this->service->setRealm($this->realm);
-        $this->service->setPass($this->pass);
-        $this->service->setDomain($this->domain);
         $this->service->connect();
     }
 
