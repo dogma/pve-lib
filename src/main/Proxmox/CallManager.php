@@ -28,7 +28,7 @@ class CallManager {
     private $host;
     private $user = "root";
     private $pass;
-    private $realm;
+    private $realm = "pve";
     private $port = 8006;
     private $base = "/api2/json";
     private $authData;
