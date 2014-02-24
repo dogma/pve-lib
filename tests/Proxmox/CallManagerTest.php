@@ -13,14 +13,14 @@ class CallManagerTest extends PHPUnit_Framework_TestCase {
 
     //These values need to be provided before tests can run
     //successfully.
-    private $host = "";
-    private $user = "";
-    private $pass = "";
-    private $realm = "";
+    private $host = "10.1.1.2";
+    private $user = "bosunpete";
+    private $pass = "ungara13";
+    private $realm = "pve";
     private $port = 8006;
     private $protocol = "https";
-    private $userCodeCheck = "";
-    private $testNode = "";
+    private $userCodeCheck = "bosunpete@pve";
+    private $testNode = "c02";
     private $testPool = "test";
     /** @var Service $service */
     private $service;

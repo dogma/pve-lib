@@ -18,10 +18,11 @@ interface PVEInterface {
     function getTemplates($node,$storage);
 
 
-    function createInstance();
-    function getInstance();
-    function deleteInstance();
+    function createInstance($type,$template,$node,$options = array());
+    function getInstance($node,$vmid);
+    function deleteInstance($node,$vmid);
+    function getInstances($node);
     function backupInstance();
-    function setInstanceConfig($instanceId,$configUpdates);
+    function setInstanceConfig($vmid,$configUpdates);
 
 } 

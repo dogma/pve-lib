@@ -10,8 +10,8 @@
         }
     ],
     "autoload": {
-        "psr-4": {
-            "": "src/main/"
+        "psr-0": {
+            "Proxmox\\": "src/main"
         }
     },
     "require": {

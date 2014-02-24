@@ -32,6 +32,7 @@ class CallManager {
     private $port = 8006;
     private $base = "/api2/json";
     private $authData;
+    private $csrf;
 
     private $authCookieName = "PVEAuthCookie";
 
@@ -66,14 +67,13 @@ class CallManager {
         $response = $request->send();
         $result = $response->json();
         $this->authData = $result['data'];
+        $this->csrf = $this->authData['CSRFPreventionToken'];
         $cookie = new Cookie();
         $cookie->setDomain($this->host);
         $cookie->setName($this->authCookieName);
         $cookie->setValue($this->authData['ticket']);
         $this->cookies->getCookieJar()->add($cookie);
         $cookie->setPorts(array($this->port));
-//        $this->cookieJar->add($cookie);
-//        echo print_r($cookie,true);
     }
 
     function get ($call) {
@@ -91,6 +91,28 @@ class CallManager {
     function post($call,$options) {
         /** @var EntityEnclosingRequest $request */
         $request = $this->client->post($call,null,$options);
+        $request->setHeader("CSRFPreventionToken",$this->csrf);
+        $request->addCookie($this->authCookieName,$this->authData['ticket']);
+        $request->getCurlOptions()->set(CURLOPT_SSL_VERIFYHOST, false);
+        $request->getCurlOptions()->set(CURLOPT_SSL_VERIFYPEER, false);
+
+        $response = $request->send();
+        return $response->json();
+    }
+
+    function delete($call,$options) {
+        /** @var EntityEnclosingRequest $request */
+        $request = $this->client->delete($call,null,$options);
+        $request->getCurlOptions()->set(CURLOPT_SSL_VERIFYHOST, false);
+        $request->getCurlOptions()->set(CURLOPT_SSL_VERIFYPEER, false);
+
+        $response = $request->send();
+        return $response->json();
+    }
+
+    function put($call,$options) {
+        /** @var EntityEnclosingRequest $request */
+        $request = $this->client->put($call,null,$options);
         $request->getCurlOptions()->set(CURLOPT_SSL_VERIFYHOST, false);
         $request->getCurlOptions()->set(CURLOPT_SSL_VERIFYPEER, false);
 

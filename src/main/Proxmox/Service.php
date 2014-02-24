@@ -9,6 +9,8 @@
 namespace Proxmox;
 
 use Proxmox\Iface\PVEInterface;
+use Proxmox\Models\Node;
+
 /**
  * Provides a wrapper service for managing the main calls to and from the api.
  * It makes use of the CallManager to make the actual calls, handle initial
@@ -21,42 +23,101 @@ use Proxmox\Iface\PVEInterface;
  */
 class Service implements PVEInterface {
 
-    function getNodes()
-    {
-        // TODO: Implement getNodes() method.
+    /** @var CallManager $callManager */
+    private $callManager;
+
+    function __construct(CallManager $callManager) {
+        $this->callManager = $callManager;
+        $this->callManager->connect();
     }
 
-    function getNode($node)
+    function getNodes()
     {
-        // TODO: Implement getNode() method.
+        $data = $this->callManager->get("nodes");
+        $nodes = $data['data'];
+        return $nodes;
+    }
+
+    function getNode($nodeName)
+    {
+        $nodes = $this->getNodes();
+        $found = false;
+        foreach($nodes as $nodeData) {
+            if($nodeData['node'] == $nodeName) {
+                $found = $nodeData;
+                break;
+            }
+        }
+
+        if(!$found) { return null; }
+
+        $data = $this->callManager->get("nodes/".$nodeName);
+        $node = new Node();
+        $node->id = $nodeName;
+        $node->data = $found;
+        $node->calls = $data['data'];
+
+        $services = $this->callManager->get("nodes/".$nodeName."/services");
+        $node->services = $services['data'];
+
+        $containers = $this->callManager->get("nodes/".$nodeName."/openvz");
+        $node->containers = $containers['data'];
+        $storage = $this->callManager->get("nodes/".$nodeName."/storage");
+        $node->storage = $storage['data'];
+        return $node;
     }
 
     function getPools()
     {
-        // TODO: Implement getPools() method.
+        $data = $this->callManager->get("pools");
+        return $data['data'];
     }
 
     function getStorage($node)
     {
-        // TODO: Implement getStorage() method.
+        $data = $this->callManager->get("nodes/$node/storage");
+        return $data['data'];
     }
 
     function getTemplates($node, $storage)
     {
-        // TODO: Implement getTemplates() method.
+        $data = $this->callManager->get("nodes/$node/storage/$storage/content");
+        $templates = $data['data'];
+        return $templates;
     }
 
-    function createInstance()
+    function getNextVmid()
     {
-        // TODO: Implement createInstance() method.
+        $data = $this->callManager->get("cluster/nextid");
+        $templates = $data['data'];
+        return $templates;
     }
 
-    function getInstance()
+    function createInstance($type,$template,$node,$options = array())
+    {
+        if($type == "openvz") {
+            echo "Trialing OPENVZ Container";
+            $vmid = $this->callManager->get("cluster/nextid");
+            $vmid = $vmid['data'];
+
+            $request = array(
+                'ostemplate'=>$template,
+                'vmid'=>$vmid,
+            );
+
+            $request = array_merge($request,$options);
+            $this->callManager->post("nodes/$node/openvz",$request);
+        } elseif($type == "kvm") {
+
+        }
+    }
+
+    function getInstance($node,$vmid)
     {
         // TODO: Implement getInstance() method.
     }
 
-    function deleteInstance()
+    function deleteInstance($node,$vmid)
     {
         // TODO: Implement deleteInstance() method.
     }
@@ -69,5 +130,10 @@ class Service implements PVEInterface {
     function setInstanceConfig($instanceId, $configUpdates)
     {
         // TODO: Implement setInstanceConfig() method.
+    }
+
+    function getInstances($node)
+    {
+        // TODO: Implement getInstances() method.
     }
 }
