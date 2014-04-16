@@ -106,15 +106,27 @@ class Service implements PVEInterface {
             );
 
             $request = array_merge($request,$options);
-            $this->callManager->post("nodes/$node/openvz",$request);
+            return $this->callManager->post("nodes/$node/openvz",$request);
         } elseif($type == "kvm") {
+            echo "Creating KVM Container";
+            $vmid = $this->callManager->get("cluster/nextid");
+            $vmid = $vmid['data'];
 
+            $request = array(
+                'vmid'=>$vmid,
+                'kvm'=>true
+            );
+
+            $request = array_merge($request,$options);
+            return $this->callManager->post("nodes/$node/qemu",$request);
         }
     }
 
     function getInstance($node,$vmid)
     {
-        // TODO: Implement getInstance() method.
+        $data = $this->callManager->get("nodes/$node/openvz/$vmid");
+        $templates = $data['data'];
+        return $templates;
     }
 
     function deleteInstance($node,$vmid)
