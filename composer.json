@@ -1,5 +1,5 @@
 {
-    "name": "gerwood/pve-lib",
+    "name": "dogma/pve-lib",
     "description": "Library for interactive with proxmox ve through the JSON API",
     "minimum-stability": "stable",
     "license": "Apache-2.0",
